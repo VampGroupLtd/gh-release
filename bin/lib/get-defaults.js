@@ -23,29 +23,6 @@ function getDefaults (workPath, isEnterprise, callback) {
   var repo = repoParts.repo
   var logPath = path.resolve(workPath, 'CHANGELOG.md')
 
-  changelogParser(logPath, function (err, result) {
-    if (err) return callback(err)
-
-    // check for 'unreleased' section in CHANGELOG: allow sections which do not include a body (eg. 'Added', 'Changed', etc.)
-
-    var unreleased = result.versions.filter(function (release) {
-      return release.title && release.title.toLowerCase
-        ? release.title.toLowerCase().indexOf('unreleased') !== -1
-        : false
-    }).filter(function (release) {
-      return !!release.body
-    })
-
-    if (unreleased.length > 0) {
-      return callback(new Error('Unreleased changes detected in CHANGELOG.md, aborting'))
-    }
-
-    var log = result.versions.filter(function (release) { return release.version !== null })[0]
-
-    if (!log) {
-      return callback(new Error('CHANGELOG.md does not contain any versions'))
-    }
-
     var lerna = {}
     if (fs.existsSync(lernaPath)) {
       lerna = require(lernaPath) /* || {} */ // 👈 though I prefer this expression
@@ -63,7 +40,7 @@ function getDefaults (workPath, isEnterprise, callback) {
     var version = pkg.version ? 'v' + pkg.version : lerna.version ? 'v' + lerna.version : null
 
     callback(null, {
-      body: log.body,
+      body: '',
       assets: false,
       owner: owner,
       repo: repo,
@@ -77,7 +54,6 @@ function getDefaults (workPath, isEnterprise, callback) {
       tag_name: version,
       name: version
     })
-  })
 }
 
 function getTargetCommitish () {
