@@ -21,20 +21,15 @@ function getDefaults (workPath, isEnterprise, callback) {
   }
   var owner = repoParts.user
   var repo = repoParts.repo
-  var logPath = path.resolve(workPath, 'CHANGELOG.md')
 
     var lerna = {}
     if (fs.existsSync(lernaPath)) {
       lerna = require(lernaPath) /* || {} */ // 👈 though I prefer this expression
       if (log.version !== lerna.version) {
         var errStr = 'CHANGELOG.md out of sync with lerna.json '
-        errStr += '(' + (log.version || log.title) + ' !== ' + lerna.version + ')'
+        errStr += '(' + ' !== ' + lerna.version + ')'
         return callback(new Error(errStr))
       }
-    } else if (log.version !== pkg.version) {
-      errStr = 'CHANGELOG.md out of sync with package.json '
-      errStr += '(' + (log.version || log.title) + ' !== ' + pkg.version + ')'
-      return callback(new Error(errStr))
     }
 
     var version = pkg.version ? 'v' + pkg.version : lerna.version ? 'v' + lerna.version : null
